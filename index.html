@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>투두리스트</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0;}
+  :root{
+    --bg:#F7F6F3;
+    --surface:#FFFFFF;
+    --border:#E8E6E1;
+    --text:#1A1A1A;
+    --text2:#6B6966;
+    --text3:#A8A5A0;
+    --accent:#1A1A1A;
+    --radius:10px;
+    --radius-sm:6px;
+  }
+  body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:32px 16px;}
+  .wrap{max-width:860px;margin:0 auto;}
+  .header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:28px;}
+  .logo{font-size:22px;font-weight:600;letter-spacing:-0.5px;}
+  .logo span{color:var(--text3);}
+  .today-date{font-size:13px;color:var(--text3);}
+  .tabs{display:flex;gap:6px;margin-bottom:20px;}
+  .tab{padding:7px 16px;border-radius:20px;border:1px solid var(--border);background:none;cursor:pointer;font-size:13px;color:var(--text2);font-family:'Noto Sans KR',sans-serif;font-weight:500;transition:all .15s;}
+  .tab:hover{background:var(--surface);}
+  .tab.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+  .board{display:grid;gap:14px;}
+  .board.all{grid-template-columns:repeat(3,1fr);}
+  @media(max-width:640px){.board.all{grid-template-columns:1fr;}}
+  .col{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;}
+  .col-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+  .col-title{font-size:13px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;}
+  .col-count{font-size:12px;color:var(--text3);}
+  .todo-item{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);}
+  .todo-item:last-child{border-bottom:none;padding-bottom:0;}
+  .todo-item:first-child{padding-top:0;}
+  .chk{width:17px;height:17px;border-radius:5px;border:1.5px solid var(--border);background:none;cursor:pointer;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+  .chk.done{background:var(--accent);border-color:var(--accent);}
+  .chk.done::after{content:'✓';font-size:10px;color:#fff;font-weight:600;}
+  .todo-body{flex:1;min-width:0;}
+  .todo-text{font-size:14px;color:var(--text);line-height:1.45;}
+  .todo-text.done{text-decoration:line-through;color:var(--text3);}
+  .todo-meta{display:flex;gap:5px;flex-wrap:wrap;margin-top:5px;align-items:center;}
+  .badge{font-size:11px;padding:2px 8px;border-radius:20px;font-weight:500;}
+  .p-high{background:#FDECEA;color:#B93028;}
+  .p-mid{background:#FEF3E2;color:#A05C10;}
+  .p-low{background:#EBF5EA;color:#2E7D32;}
+  .cat-work{background:#E8F0FE;color:#1A55C8;}
+  .cat-personal{background:#F3E8FF;color:#7B1FA2;}
+  .cat-meeting{background:#FCE4EC;color:#B0234E;}
+  .cat-etc{background:#F1F0EE;color:#5F5E5A;}
+  .due{font-size:11px;color:var(--text3);display:flex;align-items:center;gap:3px;}
+  .due.overdue{color:#B93028;}
+  .del-btn{background:none;border:none;cursor:pointer;color:var(--text3);font-size:16px;padding:2px;opacity:0;flex-shrink:0;line-height:1;transition:opacity .1s;}
+  .todo-item:hover .del-btn{opacity:1;}
+  .del-btn:hover{color:#B93028;}
+  .empty{font-size:13px;color:var(--text3);padding:16px 0;text-align:center;}
+  .fab{position:fixed;bottom:28px;right:28px;width:48px;height:48px;border-radius:50%;background:var(--accent);color:#fff;border:none;font-size:24px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(0,0,0,0.18);transition:transform .15s;}
+  .fab:hover{transform:scale(1.08);}
+  .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.32);z-index:100;align-items:center;justify-content:center;}
+  .modal-bg.open{display:flex;}
+  .modal{background:#fff;border-radius:var(--radius);padding:24px;width:340px;max-width:92vw;}
+  .modal h3{font-size:16px;font-weight:600;margin-bottom:16px;}
+  .field{margin-bottom:13px;}
+  .field label{font-size:12px;color:var(--text2);display:block;margin-bottom:5px;font-weight:500;}
+  .field input,.field select{width:100%;padding:8px 11px;font-size:13px;border:1px solid var(--border);border-radius:var(--radius-sm);background:#fff;color:var(--text);font-family:'Noto Sans KR',sans-serif;outline:none;}
+  .field input:focus,.field select:focus{border-color:#999;}
+  .modal-btns{display:flex;gap:8px;margin-top:16px;}
+  .modal-btns button{flex:1;padding:10px;border-radius:var(--radius-sm);font-size:13px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;font-weight:500;}
+  .btn-cancel{background:none;border:1px solid var(--border);color:var(--text2);}
+  .btn-save{background:var(--accent);border:none;color:#fff;}
+  .btn-cancel:hover{background:var(--bg);}
+  .btn-save:hover{opacity:.85;}
+  .progress{height:3px;background:var(--border);border-radius:2px;margin-top:10px;overflow:hidden;}
+  .progress-bar{height:100%;background:var(--accent);border-radius:2px;transition:width .3s;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header">
+    <div class="logo">내 할 일<span>.</span></div>
+    <div class="today-date" id="dateLabel"></div>
+  </div>
+  <div class="tabs">
+    <button class="tab active" onclick="setView('all',this)">전체</button>
+    <button class="tab" onclick="setView('today',this)">Today</button>
+    <button class="tab" onclick="setView('weekly',this)">Weekly</button>
+    <button class="tab" onclick="setView('monthly',this)">Monthly</button>
+  </div>
+  <div class="board all" id="board"></div>
+</div>
+<button class="fab" onclick="openModal()" title="할 일 추가">+</button>
+
+<div class="modal-bg" id="mw">
+  <div class="modal">
+    <h3>할 일 추가</h3>
+    <div class="field"><label>내용</label><input type="text" id="mText" placeholder="할 일을 입력해요"></div>
+    <div class="field"><label>기간</label>
+      <select id="mScope">
+        <option value="today">Today</option>
+        <option value="weekly">Weekly</option>
+        <option value="monthly">Monthly</option>
+      </select>
+    </div>
+    <div class="field"><label>우선순위</label>
+      <select id="mPri">
+        <option value="high">높음</option>
+        <option value="mid">보통</option>
+        <option value="low">낮음</option>
+      </select>
+    </div>
+    <div class="field"><label>카테고리</label>
+      <select id="mCat">
+        <option value="work">작업</option>
+        <option value="personal">개인</option>
+        <option value="meeting">미팅</option>
+        <option value="etc">기타</option>
+      </select>
+    </div>
+    <div class="field"><label>마감일</label><input type="date" id="mDue"></div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal()">취소</button>
+      <button class="btn-save" onclick="saveItem()">추가</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const DAYS=['일','월','화','수','목','금','토'];
+const PRI_LABEL={high:'높음',mid:'보통',low:'낮음'};
+const CAT_LABEL={work:'작업',personal:'개인',meeting:'미팅',etc:'기타'};
+const SCOPE_LABEL={today:'Today',weekly:'Weekly',monthly:'Monthly'};
+
+function getToday(){return new Date().toISOString().slice(0,10);}
+
+const dateLabel=document.getElementById('dateLabel');
+const now=new Date();
+dateLabel.textContent=`${now.getFullYear()}년 ${now.getMonth()+1}월 ${now.getDate()}일 (${DAYS[now.getDay()]})`;
+
+let view='all';
+let todos=JSON.parse(localStorage.getItem('todos')||'[]');
+let nextId=parseInt(localStorage.getItem('nextId')||'1');
+
+if(todos.length===0){
+  todos=[
+    {id:nextId++,text:'레퍼런스 이미지 정리',scope:'today',pri:'high',cat:'work',due:getToday(),done:false},
+    {id:nextId++,text:'인스타 업로드',scope:'today',pri:'mid',cat:'work',due:getToday(),done:false},
+    {id:nextId++,text:'새 시리즈 컨셉 스케치',scope:'weekly',pri:'high',cat:'work',due:'',done:false},
+    {id:nextId++,text:'포트폴리오 업데이트',scope:'monthly',pri:'high',cat:'work',due:'',done:false},
+  ];
+  save();
+}
+
+function save(){
+  localStorage.setItem('todos',JSON.stringify(todos));
+  localStorage.setItem('nextId',String(nextId));
+}
+
+function fmtDue(d){
+  if(!d)return null;
+  const TODAY=getToday();
+  const dt=new Date(d+'T00:00:00');
+  const diff=Math.round((dt-new Date(TODAY+'T00:00:00'))/(1000*60*60*24));
+  if(diff<0)return{label:'기한 초과',over:true};
+  if(diff===0)return{label:'오늘',over:false};
+  if(diff===1)return{label:'내일',over:false};
+  return{label:`${dt.getMonth()+1}/${dt.getDate()} (${DAYS[dt.getDay()]})`,over:false};
+}
+
+function renderItem(t){
+  const due=fmtDue(t.due);
+  return `<div class="todo-item">
+    <button class="chk ${t.done?'done':''}" onclick="toggle(${t.id})"></button>
+    <div class="todo-body">
+      <div class="todo-text ${t.done?'done':''}">${t.text}</div>
+      <div class="todo-meta">
+        <span class="badge p-${t.pri}">${PRI_LABEL[t.pri]}</span>
+        <span class="badge cat-${t.cat}">${CAT_LABEL[t.cat]}</span>
+        ${due?`<span class="due ${due.over?'overdue':''}">📅 ${due.label}</span>`:''}
+      </div>
+    </div>
+    <button class="del-btn" onclick="del(${t.id})">×</button>
+  </div>`;
+}
+
+function col(scope,items){
+  const list=items.filter(t=>t.scope===scope);
+  const done=list.filter(t=>t.done).length;
+  const pct=list.length?Math.round(done/list.length*100):0;
+  return `<div class="col">
+    <div class="col-head">
+      <span class="col-title">${SCOPE_LABEL[scope]}</span>
+      <span class="col-count">${done}/${list.length}</span>
+    </div>
+    <div class="progress"><div class="progress-bar" style="width:${pct}%"></div></div>
+    <div style="margin-top:14px;">
+      ${list.length===0?'<div class="empty">할 일이 없어요</div>':list.map(renderItem).join('')}
+    </div>
+  </div>`;
+}
+
+function render(){
+  const board=document.getElementById('board');
+  if(view==='all'){
+    board.className='board all';
+    board.innerHTML=col('today',todos)+col('weekly',todos)+col('monthly',todos);
+  } else {
+    board.className='board';
+    board.innerHTML=col(view,todos);
+  }
+}
+
+function setView(v,el){
+  view=v;
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  render();
+}
+function toggle(id){
+  const t=todos.find(t=>t.id===id);
+  if(t){t.done=!t.done;save();render();}
+}
+function del(id){
+  todos=todos.filter(t=>t.id!==id);
+  save();render();
+}
+function openModal(){document.getElementById('mw').classList.add('open');document.getElementById('mText').focus();}
+function closeModal(){document.getElementById('mw').classList.remove('open');}
+function saveItem(){
+  const text=document.getElementById('mText').value.trim();
+  if(!text)return;
+  todos.push({id:nextId++,text,scope:document.getElementById('mScope').value,pri:document.getElementById('mPri').value,cat:document.getElementById('mCat').value,due:document.getElementById('mDue').value,done:false});
+  save();closeModal();
+  document.getElementById('mText').value='';
+  render();
+}
+document.getElementById('mw').addEventListener('click',e=>{if(e.target===document.getElementById('mw'))closeModal();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+render();
+</script>
+</body>
+</html>
