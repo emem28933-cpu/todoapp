@@ -35,11 +35,10 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 .cal-dow{font-size:11px;color:var(--text3);text-align:center;padding:4px 0;font-weight:500;}
 .cal-dow:first-child{color:#E05C5C;}
 .cal-dow:last-child{color:#5C8AE0;}
-.cal-day{font-size:12px;text-align:center;padding:5px 2px;border-radius:6px;cursor:pointer;position:relative;color:var(--text);}
+.cal-day{font-size:12px;text-align:center;padding:5px 2px;border-radius:6px;cursor:pointer;color:var(--text);}
 .cal-day:hover{background:var(--bg);}
 .cal-day.other{color:var(--text3);}
 .cal-day.today-cell{font-weight:600;background:var(--accent);color:#fff;}
-.cal-day.today-cell:hover{opacity:.85;}
 .cal-day.selected{background:#E8E6E1;font-weight:600;}
 .cal-day.today-cell.selected{background:var(--accent);}
 .cal-day.in-range{background:#F0EEE8;}
@@ -48,7 +47,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 .dot-high{background:#E05C5C;}
 .dot-mid{background:#E0A35C;}
 .dot-low{background:#5CB85C;}
-.cal-legend{display:flex;gap:10px;margin-top:12px;justify-content:center;flex-wrap:wrap;}
+.cal-legend{display:flex;gap:10px;margin-top:12px;justify-content:center;}
 .cal-legend span{font-size:11px;color:var(--text3);display:flex;align-items:center;gap:4px;}
 
 /* 투두 */
@@ -61,15 +60,19 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 .col-count{font-size:12px;color:var(--text3);}
 .progress{height:3px;background:var(--border);border-radius:2px;margin-bottom:12px;overflow:hidden;}
 .progress-bar{height:100%;background:var(--accent);border-radius:2px;transition:width .3s;}
-.todo-item{display:flex;align-items:flex-start;gap:9px;padding:8px 0;border-bottom:1px solid var(--border);}
-.todo-item:last-child{border-bottom:none;padding-bottom:0;}
-.todo-item:first-child{padding-top:0;}
+.todo-item{border-bottom:1px solid var(--border);}
+.todo-item:last-child{border-bottom:none;}
+.todo-row{display:flex;align-items:flex-start;gap:9px;padding:9px 0;}
+.todo-item:first-child .todo-row{padding-top:0;}
 .chk{width:16px;height:16px;border-radius:5px;border:1.5px solid var(--border);background:none;cursor:pointer;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;transition:all .15s;}
 .chk.done{background:var(--accent);border-color:var(--accent);}
 .chk.done::after{content:'✓';font-size:10px;color:#fff;font-weight:600;}
 .todo-body{flex:1;min-width:0;}
-.todo-text{font-size:13px;color:var(--text);line-height:1.45;}
+.todo-title-row{display:flex;align-items:center;gap:6px;cursor:pointer;}
+.todo-text{font-size:13px;color:var(--text);line-height:1.45;flex:1;}
 .todo-text.done{text-decoration:line-through;color:var(--text3);}
+.expand-icon{font-size:10px;color:var(--text3);transition:transform .2s;flex-shrink:0;}
+.expand-icon.open{transform:rotate(90deg);}
 .todo-meta{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px;align-items:center;}
 .badge{font-size:11px;padding:2px 7px;border-radius:20px;font-weight:500;}
 .p-high{background:#FDECEA;color:#B93028;}
@@ -81,8 +84,10 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 .cat-etc{background:#F1F0EE;color:#5F5E5A;}
 .due{font-size:11px;color:var(--text3);}
 .due.overdue{color:#B93028;}
+.todo-note{font-size:12px;color:var(--text2);line-height:1.6;background:var(--bg);padding:9px 11px;border-radius:var(--radius-sm);margin:0 0 8px 25px;white-space:pre-wrap;display:none;}
+.todo-note.open{display:block;}
 .item-btns{display:flex;gap:4px;flex-shrink:0;opacity:0;transition:opacity .1s;}
-.todo-item:hover .item-btns{opacity:1;}
+.todo-row:hover .item-btns{opacity:1;}
 .icon-btn{background:none;border:none;cursor:pointer;font-size:14px;padding:2px 4px;line-height:1;border-radius:4px;color:var(--text3);}
 .icon-btn:hover{background:var(--bg);}
 .icon-btn.edit:hover{color:#1A55C8;}
@@ -98,19 +103,20 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 /* 모달 */
 .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.32);z-index:100;align-items:center;justify-content:center;}
 .modal-bg.open{display:flex;}
-.modal{background:#fff;border-radius:var(--radius);padding:24px;width:360px;max-width:92vw;max-height:90vh;overflow-y:auto;}
+.modal{background:#fff;border-radius:var(--radius);padding:24px;width:380px;max-width:92vw;max-height:90vh;overflow-y:auto;}
 .modal h3{font-size:15px;font-weight:600;margin-bottom:16px;}
 .field{margin-bottom:12px;}
 .field label{font-size:12px;color:var(--text2);display:block;margin-bottom:4px;font-weight:500;}
-.field input,.field select{width:100%;padding:8px 10px;font-size:13px;border:1px solid var(--border);border-radius:var(--radius-sm);background:#fff;color:var(--text);font-family:'Noto Sans KR',sans-serif;outline:none;}
-.field input:focus,.field select:focus{border-color:#999;}
+.field input,.field select,.field textarea{width:100%;padding:8px 10px;font-size:13px;border:1px solid var(--border);border-radius:var(--radius-sm);background:#fff;color:var(--text);font-family:'Noto Sans KR',sans-serif;outline:none;}
+.field textarea{resize:vertical;min-height:80px;line-height:1.6;}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:#999;}
 .date-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
 .modal-btns{display:flex;gap:8px;margin-top:14px;}
 .modal-btns button{flex:1;padding:10px;border-radius:var(--radius-sm);font-size:13px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;font-weight:500;}
 .btn-cancel{background:none;border:1px solid var(--border);color:var(--text2);}
 .btn-save{background:var(--accent);border:none;color:#fff;}
-.btn-cancel:hover{background:var(--bg);}
-.btn-save:hover{opacity:.85;}
+.date-fields{display:none;}
+.date-fields.show{display:block;}
 </style>
 </head>
 <body>
@@ -143,39 +149,42 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
   </div>
 </div>
 
-<button class="fab" onclick="openModal(null)" title="할 일 추가">+</button>
+<button class="fab" onclick="openModal(null)">+</button>
 
 <div class="modal-bg" id="mw">
   <div class="modal">
     <h3 id="mTitle">할 일 추가</h3>
-    <div class="field"><label>내용</label><input type="text" id="mText" placeholder="할 일을 입력해요"></div>
+    <div class="field"><label>제목</label><input type="text" id="mText" placeholder="할 일을 입력해요"></div>
+    <div class="field"><label>내용 <span style="color:var(--text3);font-weight:400;">(선택)</span></label><textarea id="mNote" placeholder="메모나 상세 내용을 입력해요"></textarea></div>
     <div class="field"><label>기간</label>
-      <select id="mScope">
+      <select id="mScope" onchange="onScopeChange()">
         <option value="today">Today</option>
         <option value="weekly">Weekly</option>
         <option value="monthly">Monthly</option>
       </select>
     </div>
-    <div class="field"><label>우선순위</label>
-      <select id="mPri">
-        <option value="high">높음</option>
-        <option value="mid">보통</option>
-        <option value="low">낮음</option>
-      </select>
-    </div>
-    <div class="field"><label>카테고리</label>
-      <select id="mCat">
-        <option value="work">작업</option>
-        <option value="personal">개인</option>
-        <option value="meeting">미팅</option>
-        <option value="etc">기타</option>
-      </select>
-    </div>
-    <div class="field">
-      <label>시작일 / 마감일</label>
-      <div class="date-row">
-        <input type="date" id="mStart" placeholder="시작일">
-        <input type="date" id="mDue" placeholder="마감일">
+    <div class="date-fields" id="dateFields">
+      <div class="field"><label>우선순위</label>
+        <select id="mPri">
+          <option value="high">높음</option>
+          <option value="mid">보통</option>
+          <option value="low">낮음</option>
+        </select>
+      </div>
+      <div class="field"><label>카테고리</label>
+        <select id="mCat">
+          <option value="work">작업</option>
+          <option value="personal">개인</option>
+          <option value="meeting">미팅</option>
+          <option value="etc">기타</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>시작일 / 마감일</label>
+        <div class="date-row">
+          <input type="date" id="mStart">
+          <input type="date" id="mDue">
+        </div>
       </div>
     </div>
     <div class="modal-btns">
@@ -191,17 +200,17 @@ const PRI_LABEL={high:'높음',mid:'보통',low:'낮음'};
 const CAT_LABEL={work:'작업',personal:'개인',meeting:'미팅',etc:'기타'};
 const SCOPE_LABEL={today:'Today',weekly:'Weekly',monthly:'Monthly'};
 
-const now=new Date();
+const _n=new Date();
 let view='all';
-let calYear=now.getFullYear();
-let calMonth=now.getMonth();
+let calYear=_n.getFullYear();
+let calMonth=_n.getMonth();
 let selectedDate=null;
 let editingId=null;
 
-document.getElementById('dateLabel').textContent=
-  `${now.getFullYear()}년 ${now.getMonth()+1}월 ${now.getDate()}일 (${DAYS_KO[now.getDay()]})`;
 
-function getToday(){return now.toISOString().slice(0,10);}
+  
+
+function getToday(){const n=new Date();return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,"0")}-${String(n.getDate()).padStart(2,"0")}`;}
 function fmt(y,m,d){return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;}
 
 let todos=JSON.parse(localStorage.getItem('todos')||'[]');
@@ -209,16 +218,22 @@ let nextId=parseInt(localStorage.getItem('nextId')||'1');
 if(todos.length===0){
   const td=getToday();
   todos=[
-    {id:nextId++,text:'레퍼런스 이미지 정리',scope:'today',pri:'high',cat:'work',start:td,due:td,done:false},
-    {id:nextId++,text:'인스타 업로드',scope:'today',pri:'mid',cat:'work',start:'',due:td,done:false},
-    {id:nextId++,text:'새 시리즈 컨셉 스케치',scope:'weekly',pri:'high',cat:'work',start:'',due:'',done:false},
-    {id:nextId++,text:'포트폴리오 업데이트',scope:'monthly',pri:'high',cat:'work',start:'',due:'',done:false},
+    {id:nextId++,text:'레퍼런스 이미지 정리',note:'핀터레스트에서 수집한 이미지 폴더별로 정리하기',scope:'today',pri:'mid',cat:'work',start:'',due:'',done:false},
+    {id:nextId++,text:'인스타 업로드',note:'',scope:'today',pri:'mid',cat:'work',start:'',due:'',done:false},
+    {id:nextId++,text:'새 시리즈 컨셉 스케치',note:'색감은 모노톤 계열로. A4 3장 분량.',scope:'weekly',pri:'high',cat:'work',start:'',due:'',done:false},
+    {id:nextId++,text:'포트폴리오 업데이트',note:'',scope:'monthly',pri:'high',cat:'work',start:'',due:'',done:false},
   ];
   save();
 }
 function save(){
   localStorage.setItem('todos',JSON.stringify(todos));
   localStorage.setItem('nextId',String(nextId));
+}
+
+function onScopeChange(){
+  const scope=document.getElementById('mScope').value;
+  const df=document.getElementById('dateFields');
+  df.className='date-fields'+(scope!=='today'?' show':'');
 }
 
 function fmtDue(start,due){
@@ -246,21 +261,38 @@ function fmtDue(start,due){
 
 function renderItem(t){
   const due=fmtDue(t.start,t.due);
-  return `<div class="todo-item">
-    <button class="chk ${t.done?'done':''}" onclick="toggle(${t.id})"></button>
-    <div class="todo-body">
-      <div class="todo-text ${t.done?'done':''}">${t.text}</div>
-      <div class="todo-meta">
-        <span class="badge p-${t.pri}">${PRI_LABEL[t.pri]}</span>
-        <span class="badge cat-${t.cat}">${CAT_LABEL[t.cat]}</span>
-        ${due?`<span class="due ${due.over?'overdue':''}">📅 ${due.label}</span>`:''}
+  const hasNote=t.note&&t.note.trim();
+  const isToday=t.scope==='today';
+  return `<div class="todo-item" id="item-${t.id}">
+    <div class="todo-row">
+      <button class="chk ${t.done?'done':''}" onclick="toggle(${t.id})"></button>
+      <div class="todo-body">
+        <div class="todo-title-row" onclick="${hasNote?`toggleNote(${t.id})`:''}">
+          <span class="todo-text ${t.done?'done':''}">${t.text}</span>
+          ${hasNote?`<span class="expand-icon" id="icon-${t.id}">▶</span>`:''}
+        </div>
+        ${!isToday?`<div class="todo-meta">
+          <span class="badge p-${t.pri}">${PRI_LABEL[t.pri]}</span>
+          <span class="badge cat-${t.cat}">${CAT_LABEL[t.cat]}</span>
+          ${due?`<span class="due ${due.over?'overdue':''}">📅 ${due.label}</span>`:''}
+        </div>`:''}
+      </div>
+      <div class="item-btns">
+        <button class="icon-btn edit" onclick="openModal(${t.id})">✏️</button>
+        <button class="icon-btn del" onclick="del(${t.id})">×</button>
       </div>
     </div>
-    <div class="item-btns">
-      <button class="icon-btn edit" onclick="openModal(${t.id})" title="수정">✏️</button>
-      <button class="icon-btn del" onclick="del(${t.id})" title="삭제">×</button>
-    </div>
+    ${hasNote?`<div class="todo-note" id="note-${t.id}">${t.note}</div>`:''}
   </div>`;
+}
+
+function toggleNote(id){
+  const note=document.getElementById('note-'+id);
+  const icon=document.getElementById('icon-'+id);
+  if(!note)return;
+  const isOpen=note.classList.contains('open');
+  note.classList.toggle('open',!isOpen);
+  if(icon)icon.classList.toggle('open',!isOpen);
 }
 
 function col(scope,items){
@@ -281,9 +313,10 @@ function renderTodos(){
   const area=document.getElementById('todoArea');
   if(selectedDate){
     const filtered=todos.filter(t=>{
-      if(t.start&&t.due) return t.start<=selectedDate&&selectedDate<=t.due;
-      if(t.due) return t.due===selectedDate;
-      if(t.start) return t.start===selectedDate;
+      if(t.scope==='today')return false;
+      if(t.start&&t.due)return t.start<=selectedDate&&selectedDate<=t.due;
+      if(t.due)return t.due===selectedDate;
+      if(t.start)return t.start===selectedDate;
       return false;
     });
     const done=filtered.filter(t=>t.done).length;
@@ -316,49 +349,32 @@ function renderCal(){
   const daysInMonth=new Date(calYear,calMonth+1,0).getDate();
   const daysInPrev=new Date(calYear,calMonth,0).getDate();
   const td=getToday();
-
-  // 날짜별 할일 맵 (시작일~마감일 범위 포함)
   const duemap={};
-  todos.forEach(t=>{
+  todos.filter(t=>t.scope!=='today').forEach(t=>{
     const dates=[];
     if(t.start&&t.due){
       let cur=new Date(t.start+'T00:00:00');
       const end=new Date(t.due+'T00:00:00');
-      while(cur<=end){
-        dates.push(cur.toISOString().slice(0,10));
-        cur.setDate(cur.getDate()+1);
-      }
-    } else if(t.due) dates.push(t.due);
-    else if(t.start) dates.push(t.start);
-    dates.forEach(ds=>{
-      if(!duemap[ds])duemap[ds]=[];
-      duemap[ds].push(t);
-    });
+      while(cur<=end){dates.push(cur.toISOString().slice(0,10));cur.setDate(cur.getDate()+1);}
+    } else if(t.due)dates.push(t.due);
+    else if(t.start)dates.push(t.start);
+    dates.forEach(ds=>{if(!duemap[ds])duemap[ds]=[];duemap[ds].push(t);});
   });
-
-  for(let i=0;i<first;i++){
-    html+=`<div class="cal-day other">${daysInPrev-first+1+i}</div>`;
-  }
+  for(let i=0;i<first;i++) html+=`<div class="cal-day other">${daysInPrev-first+1+i}</div>`;
   for(let d=1;d<=daysInMonth;d++){
     const ds=fmt(calYear,calMonth,d);
-    const isToday=ds===td;
-    const isSel=ds===selectedDate;
+    const isToday=ds===td,isSel=ds===selectedDate;
     const items=duemap[ds]||[];
     const dots=[...new Set(items.map(t=>t.pri))].slice(0,3).map(p=>`<span class="dot dot-${p}"></span>`).join('');
     html+=`<div class="cal-day ${isToday?'today-cell':''} ${isSel?'selected':''} ${!isSel&&items.length?'in-range':''}" onclick="selectDate('${ds}')">
-      ${d}<div class="dots">${dots}</div>
-    </div>`;
+      ${d}<div class="dots">${dots}</div></div>`;
   }
-  const total=first+daysInMonth;
-  const remain=(7-total%7)%7;
+  const remain=(7-(first+daysInMonth)%7)%7;
   for(let d=1;d<=remain;d++) html+=`<div class="cal-day other">${d}</div>`;
   grid.innerHTML=html;
 }
 
-function selectDate(ds){
-  selectedDate=selectedDate===ds?null:ds;
-  renderCal();renderTodos();
-}
+function selectDate(ds){selectedDate=selectedDate===ds?null:ds;renderCal();renderTodos();}
 function moveMonth(dir){
   calMonth+=dir;
   if(calMonth>11){calMonth=0;calYear++;}
@@ -375,10 +391,7 @@ function toggle(id){
   const t=todos.find(t=>t.id===id);
   if(t){t.done=!t.done;save();renderCal();renderTodos();}
 }
-function del(id){
-  todos=todos.filter(t=>t.id!==id);
-  save();renderCal();renderTodos();
-}
+function del(id){todos=todos.filter(t=>t.id!==id);save();renderCal();renderTodos();}
 
 function openModal(id){
   editingId=id;
@@ -388,19 +401,22 @@ function openModal(id){
   if(isEdit){
     const t=todos.find(t=>t.id===id);
     document.getElementById('mText').value=t.text;
+    document.getElementById('mNote').value=t.note||'';
     document.getElementById('mScope').value=t.scope;
-    document.getElementById('mPri').value=t.pri;
-    document.getElementById('mCat').value=t.cat;
+    document.getElementById('mPri').value=t.pri||'mid';
+    document.getElementById('mCat').value=t.cat||'work';
     document.getElementById('mStart').value=t.start||'';
     document.getElementById('mDue').value=t.due||'';
   } else {
     document.getElementById('mText').value='';
-    document.getElementById('mScope').value='today';
+    document.getElementById('mNote').value='';
+    document.getElementById('mScope').value=view!=='all'?view:'today';
     document.getElementById('mPri').value='mid';
     document.getElementById('mCat').value='work';
     document.getElementById('mStart').value=selectedDate||'';
     document.getElementById('mDue').value=selectedDate||'';
   }
+  onScopeChange();
   document.getElementById('mw').classList.add('open');
   document.getElementById('mText').focus();
 }
@@ -408,27 +424,36 @@ function closeModal(){document.getElementById('mw').classList.remove('open');edi
 function saveItem(){
   const text=document.getElementById('mText').value.trim();
   if(!text)return;
+  const scope=document.getElementById('mScope').value;
+  const isToday=scope==='today';
   const data={
     text,
-    scope:document.getElementById('mScope').value,
-    pri:document.getElementById('mPri').value,
-    cat:document.getElementById('mCat').value,
-    start:document.getElementById('mStart').value,
-    due:document.getElementById('mDue').value,
+    note:document.getElementById('mNote').value.trim(),
+    scope,
+    pri:isToday?'mid':document.getElementById('mPri').value,
+    cat:isToday?'work':document.getElementById('mCat').value,
+    start:isToday?'':document.getElementById('mStart').value,
+    due:isToday?'':document.getElementById('mDue').value,
     done:false
   };
   if(editingId!==null){
     const idx=todos.findIndex(t=>t.id===editingId);
-    if(idx>-1){todos[idx]={...todos[idx],...data};}
+    if(idx>-1)todos[idx]={...todos[idx],...data};
   } else {
     todos.push({id:nextId++,...data});
   }
   save();closeModal();renderCal();renderTodos();
 }
-document.getElementById('mw').addEventListener('click',e=>{
-  if(e.target===document.getElementById('mw'))closeModal();
-});
+document.getElementById('mw').addEventListener('click',e=>{if(e.target===document.getElementById('mw'))closeModal();});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+function updateDateLabel(){
+  const n=new Date();
+  document.getElementById('dateLabel').textContent=
+    `${n.getFullYear()}년 ${n.getMonth()+1}월 ${n.getDate()}일 (${DAYS_KO[n.getDay()]})`;
+  const midnight=new Date(n.getFullYear(),n.getMonth(),n.getDate()+1);
+  setTimeout(()=>{updateDateLabel();renderCal();renderTodos();},midnight-n);
+}
+updateDateLabel();
 renderCal();renderTodos();
 </script>
 </body>
